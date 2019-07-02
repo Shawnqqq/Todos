@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Todos</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+            border: 0;
+            font-size: 16px;
+            font-family: Arial, Helvetica, sans-serif;
+            letter-spacing: 1px;
+            list-style: none;
+            outline: none;
+            color: #ffffff;
+        }
+        html,body{
+            width: 100%;
+            height: 100%;
+        }
+        .todo-section{
+            width: 100%;
+            min-height: 100%;
+            background-color: #089db1;
+        }
+        .todo-container{
+            width: 1000px;
+            margin: 0 auto;
+        }
+        .todo-title{
+            text-align: center;
+            padding-top: 200px;
+            font-size: 60px;
+            font-weight: 700;
+            color: yellow;
+            text-shadow: 5px 5px 8px #7cc705;
+        }
+        .todo-content{
+            margin-top: 50px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .todo-input{
+            width: 450px;
+            height: 40px;
+            background-color: rgba(251, 0, 0, 0.678);
+            border-radius: 40px;
+            text-indent: 40px;
+            color: #ffffff;
+            box-shadow: 5px 5px 3px rgba(251, 0, 0, 0.452);
+        }
+        .todo-list{
+            text-indent: 50px;
+            line-height: 40px;
+            position: relative;
+        }
+        .todo-item{
+            display: flex;
+            position: relative;
+            width: 450px;
+            height: 40px;
+            background-color: rgba(251, 255, 0, 0.712);
+            border-radius: 40px;
+            box-shadow: 5px 5px 3px rgba(251, 255, 0, 0.3);
+            margin-top: 10px;
+        }
+        .todo-item:hover .todo-item-right{
+            display: block;
+        }
+        .todo-item-left{
+            position: absolute;
+            top: 9px;
+            left: 15px;
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgb(255, 255, 255,0.8);
+            border-radius: 50%;
+        }
+        .active .todo-item-left{
+            position: absolute;
+            top: 9px;
+            left: 15px;
+            width: 18px;
+            height: 18px;
+            background-color: #000000;
+            border: 2px solid rgb(255, 255, 255,0.8);
+            border-radius: 50%;
+        }
+        .active .todo-item-middle{
+            text-decoration: line-through;
+            color: #000000;
+        }
+        .todo-item-right{
+            display: none;
+            position: absolute;
+            top: 9px;
+            right: 15px;
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgb(0,0,0,0.7);
+            border-radius: 50%;
+        }
+    </style>
+</head>
+<body>
+    <div class="todo-section">
+        <div class="todo-container">
+            <div class="todo-title">Todos</div>
+            <div class="todo-content">
+                <input class="todo-input" id="todo-input" type="text">
+                <div class="todo-list" id="todo-list">
+                    <div class="todo-item">
+                        <div class="todo-item-left"></div>
+                        <div class="todo-item-middle">123</div>
+                        <div class="todo-item-right"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        let todoInput=document.getElementById("todo-input");
+        let todoList=document.getElementById("todo-list");
+        todoInput.addEventListener('keydown',function(enter){
+            if(enter.which!=13 || this.value==""){
+                return;
+            }
+            let todoItem =document.createElement("div");
+            let todoItemLeft =document.createElement("div");
+            let todoItemMiddle =document.createElement("div");
+            let todoItemRight =document.createElement("div");
+            todoList.appendChild(todoItem);
+            todoItem.appendChild(todoItemLeft);
+            todoItem.appendChild(todoItemMiddle);
+            todoItem.appendChild(todoItemRight);
+            todoItem.setAttribute('class','todo-item');
+            todoItemLeft.setAttribute('class','todo-item-left');
+            todoItemMiddle.setAttribute('class','todo-item-middle');
+            todoItemRight.setAttribute('class','todo-item-right');
+            todoItemMiddle.innerText=this.value;
+            this.value=null;
+            
+
+            let itemleng =document.getElementById("todo-list").children.length;
+            let index = itemleng % 7;
+            let itemcolor=todoList.lastChild;
+            if(index<7){
+                switch(index){
+                case 0:
+                    itemcolor.style.backgroundColor="rgba(251, 0, 0, 0.678)";
+                    itemcolor.style.boxShadow="5px 5px 3px rgba(251, 0, 0, 0.3)";
+                    break;
+                case 1:
+                    itemcolor.style.backgroundColor="rgba(251, 255, 0, 0.712)";
+                    itemcolor.style.boxShadow="5px 5px 3px rgba(251, 255, 0, 0.3)";
+                    break;
+                case 2:
+                    itemcolor.style.backgroundColor="rgba(0, 0, 255, 0.7)";
+                    itemcolor.style.boxShadow="5px 5px 3px rgba(0, 0,255, 0.3)";
+                    break;
+                case 3:
+                    itemcolor.style.backgroundColor="rgba(0, 255, 0, 0.7)";
+                    itemcolor.style.boxShadow="5px 5px 3px rgba(0,255,0, 0.3)";
+                    break;
+                case 4:
+                    itemcolor.style.backgroundColor="rgba(0, 255, 205, 0.7)";
+                    itemcolor.style.boxShadow="5px 5px 3px rgba(0, 255,205, 0.3)";
+                    break;
+                case 5:
+                    itemcolor.style.backgroundColor="rgba(0, 0, 139, 0.7)";
+                    itemcolor.style.boxShadow="5px 5px 3px rgba(0, 0,139, 0.3)";
+                    break;
+                case 6:
+                    itemcolor.style.backgroundColor="rgba(128, 0, 128, 0.7)";
+                    itemcolor.style.boxShadow="5px 5px 3px rgba(128, 0,128, 0.3)";
+                    break;
+                }
+            }
+        })
+        todoList.addEventListener('click',function(num){
+            let classLeft = num.target.className.indexOf("todo-item-left");
+            let classRight = num.target.className.indexOf("todo-item-right");
+            let classitem =num.target.parentNode;
+            if(classLeft >= 0){
+                let addActive= classitem.className.indexOf("active");
+                if(addActive<0){
+                    classitem.className += " active";
+                }else{
+                    classitem.className = "todo-item";
+                }
+            }
+            if(classRight>=0){
+                classitem.remove();
+            }
+        })
+    </script>
+</body>
+</html>
