@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>todos</title>
+    <script src="./jquery-3.4.1.min.js"></script>
+    <style>
+    *{
+        margin: 0;
+        padding: 0;
+        font-size: 18px;
+        font-family: Arial, Helvetica, sans-serif;
+        list-style: none;
+        box-sizing: border-box;
+    }
+    .container{
+        width: 800px;
+        margin: 20px auto;
+    }
+    .title{
+        font-size: 50px;
+        line-height: 250px;
+        text-align: center;
+        text-shadow: 3px 4px 5px #999999;
+    }
+    .content{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+    .todo-input{
+        width: 500px;
+        height: 35px;
+        text-indent: 40px;
+        border: 1px solid #999999;
+    }
+    .todo-item{
+        width: 500px;
+        height: 35px;
+        line-height: 35px;
+        border: 1px solid #999999;
+        display: flex;
+    }
+    .todo-item .todo-left{
+        width: 20px;
+        height: 20px;
+        margin: 5px 15px;
+        border: 2px solid #555555;
+        border-radius: 50%;
+    }
+    .todo-item .todo-middle{
+        flex: 1;
+    }
+    .todo-item:hover .todo-right{
+        display: block;
+    }
+    .todo-item .todo-right{
+        display: none;
+        width: 20px;
+        height: 20px;
+        margin: 5px 10px;
+        background-color: #777777;
+        border: 2px solid #777777;
+        border-radius: 50%;
+    }
+    .active .todo-left{
+        background-color: red;
+    }
+    .active .todo-middle{
+        text-decoration: line-through;
+    }
+    .todo-filter{
+        display: flex;
+    }
+    .filter-item{
+        width: 120px;
+        height: 35px;
+        line-height: 35px;
+        border: 1px solid #777777;
+        margin: 10px 20px;
+        text-align: center;
+        border-radius: 40px;
+    }
+    .todo-filter .active{
+        background-color: #9999998e;
+    }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="title">Todos</div>
+        <div class="content">
+            <input type="text" id="todo-input" class="todo-input">
+            <div class="todo-list" id="todo-list">
+                <div class="todo-item">
+                    <div class="todo-left"></div>
+                    <div class="todo-middle">123</div>
+                    <div class="todo-right"></div>
+                </div>
+            </div>
+            <div class="todo-filter" id="todo-filter">
+                <div class="filter-item">全部事件</div>
+                <div class="filter-item">待办事件</div>
+                <div class="filter-item">已办事件</div>
+            </div>
+        </div>
+    </div>
+    <script>
+        const PAGE={
+            init:function(){
+                this.bind();
+            },
+            bind:function(){
+                $("#todo-input").on('keyup',this.keyup);
+                $("#todo-list").on('click','.todo-left',this.changeTodo)
+                $("#todo-list").on('click','.todo-right',this.removeTodo)
+            },
+            keyup:function(e){
+                if(e.which!=13 || e.target.value.trim()==''){
+                    return;
+                }
+                $("#todo-list").append(`<div class="todo-item">
+                <div class="todo-left"></div>
+                <div class="todo-middle">${e.target.value.trim()}</div>
+                <div class="todo-right"></div>
+                </div>`);
+                $("#todo-input").val('')
+            },
+            changeTodo:function(){
+                $(this).parent().toggleClass("active");
+            },
+            removeTodo:function(){
+                $(this).parent().remove();
+            }
+        }
+        PAGE.init()
+    </script>
+</body>
+</html>

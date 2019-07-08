@@ -102,6 +102,25 @@
             border: 2px solid rgb(0,0,0,0.7);
             border-radius: 50%;
         }
+        .todo-btn{
+            display: flex;
+        }
+        .btn-item{
+            width: 120px;
+            height: 30px; 
+            margin: 20px 8px;
+            text-align: center;
+            line-height: 30px;
+            background-color: #333333;
+            border-radius: 30px;
+            font-size: 17px;
+            font-weight: 600px;
+            color: #bdbcbc;
+            box-shadow: 1px 1px 4px #333333;
+        }
+        .todo-btn .active{
+            color: #ffffff;
+        }
     </style>
 </head>
 <body>
@@ -117,84 +136,154 @@
                         <div class="todo-item-right"></div>
                     </div>
                 </div>
+                <div class="todo-btn" id="todo-btn">
+                    <div class="btn-item">全部事件</div>
+                    <div class="btn-item">待办事件</div>
+                    <div class="btn-item">已办事件</div>
+                </div>
             </div>
         </div>
     </div>
     <script>
-        let todoInput=document.getElementById("todo-input");
-        let todoList=document.getElementById("todo-list");
-        todoInput.addEventListener('keydown',function(enter){
-            if(enter.which!=13 || this.value==""){
-                return;
-            }
-            let todoItem =document.createElement("div");
-            let todoItemLeft =document.createElement("div");
-            let todoItemMiddle =document.createElement("div");
-            let todoItemRight =document.createElement("div");
-            todoList.appendChild(todoItem);
-            todoItem.appendChild(todoItemLeft);
-            todoItem.appendChild(todoItemMiddle);
-            todoItem.appendChild(todoItemRight);
-            todoItem.setAttribute('class','todo-item');
-            todoItemLeft.setAttribute('class','todo-item-left');
-            todoItemMiddle.setAttribute('class','todo-item-middle');
-            todoItemRight.setAttribute('class','todo-item-right');
-            todoItemMiddle.innerText=this.value;
-            this.value=null;
-            
-
-            let itemleng =document.getElementById("todo-list").children.length;
-            let index = itemleng % 7;
-            let itemcolor=todoList.lastChild;
-            if(index<7){
-                switch(index){
-                case 0:
-                    itemcolor.style.backgroundColor="rgba(251, 0, 0, 0.678)";
-                    itemcolor.style.boxShadow="5px 5px 3px rgba(251, 0, 0, 0.3)";
+        const MAIN ={
+            data:{
+                content:[{
+                    title:1,
+                    complete:false
+                }],
+                change:{
+                    1:"全部事件",
+                    2:"待办事件",
+                    3:"已办事件"
+                },
+                changes:1
+            },
+            init:function(){
+                this.getTodos();
+                this.bind();
+            },
+            bind: function(){
+                let todoInput=document.getElementById("todo-input");
+                let todoList=document.getElementById("todo-list");
+                let todoBtn=document.getElementById("todo-btn");
+                todoInput.addEventListener("keydown",this.addTodo);
+                this.addEvent(todoList,"click","todo-item-left",this.changeTodo);
+                this.addEvent(todoList,"click","todo-item-right",this.removeTodo);
+                this.addEvent(todoBtn,"click","btn-item",this.btnTodo);
+                window.addEventListener('unload',this.saveTodos);
+            },
+            addEvent:function(parentNode,active,childClassName,down){ 
+                parentNode.addEventListener(active,function(e){
+                    e.target.className.indexOf(childClassName)>=0 && down(e);
+                })
+            },
+            getTodos: function() {
+                let todos = localStorage.getItem('todos');
+                todos = JSON.parse(todos) || [];
+                MAIN.data.content = todos;
+                this.render();
+            },
+            saveTodos: function() {
+                let todos = MAIN.data.content;
+                let todosStr = JSON.stringify(todos);
+                localStorage.setItem('todos',todosStr);
+            },
+            render: function(){
+                let content =this.data.content;
+                let change =this.data.change;
+                let changes =this.data.changes;
+                content.forEach(function(item,index){item.index=index});
+                let showContent;
+                switch(changes){
+                    case 2: showContent =content.filter((content)=>!content.complete)
                     break;
-                case 1:
-                    itemcolor.style.backgroundColor="rgba(251, 255, 0, 0.712)";
-                    itemcolor.style.boxShadow="5px 5px 3px rgba(251, 255, 0, 0.3)";
+                    case 3: showContent =content.filter((content)=>content.complete)
                     break;
-                case 2:
-                    itemcolor.style.backgroundColor="rgba(0, 0, 255, 0.7)";
-                    itemcolor.style.boxShadow="5px 5px 3px rgba(0, 0,255, 0.3)";
-                    break;
-                case 3:
-                    itemcolor.style.backgroundColor="rgba(0, 255, 0, 0.7)";
-                    itemcolor.style.boxShadow="5px 5px 3px rgba(0,255,0, 0.3)";
-                    break;
-                case 4:
-                    itemcolor.style.backgroundColor="rgba(0, 255, 205, 0.7)";
-                    itemcolor.style.boxShadow="5px 5px 3px rgba(0, 255,205, 0.3)";
-                    break;
-                case 5:
-                    itemcolor.style.backgroundColor="rgba(0, 0, 139, 0.7)";
-                    itemcolor.style.boxShadow="5px 5px 3px rgba(0, 0,139, 0.3)";
-                    break;
-                case 6:
-                    itemcolor.style.backgroundColor="rgba(128, 0, 128, 0.7)";
-                    itemcolor.style.boxShadow="5px 5px 3px rgba(128, 0,128, 0.3)";
+                    default:showContent =content;
                     break;
                 }
+                let todosElement= showContent.map(function(item){
+                    return  `<div class="todo-item ${item.complete ? 'active': ''}"  data-index="${item.index}">
+                                <div class="todo-item-left"></div>
+                                <div class="todo-item-middle">${item.title}</div>
+                                <div class="todo-item-right"></div>
+                            </div>`
+                }).join('');
+                let btnElemtnt= Object.keys(change).map(function(key){
+                    return `<div class="btn-item ${changes==key ? 'active':''}" data-id="${key}">${change[key]}</div>`
+                }).join('');
+                todoList=document.getElementById("todo-list");
+                todoBtn=document.getElementById("todo-btn");
+                todoList.innerHTML=todosElement;
+                todoBtn.innerHTML=btnElemtnt;
+                let dom =document.getElementsByClassName('todo-item');
+                    for(i=0;i<dom.length;i++){
+                    let itemIndex=i%7;
+                    switch(itemIndex){
+                        case 6:
+                            dom[i].style.backgroundColor="rgba(251, 0, 0, 0.678)";
+                            dom[i].style.boxShadow="5px 5px 3px rgba(251, 0, 0, 0.3)";
+                            break;
+                        case 0:
+                            dom[i].style.backgroundColor="rgba(251, 255, 0, 0.712)";
+                            dom[i].style.boxShadow="5px 5px 3px rgba(251, 255, 0, 0.3)";
+                            break;
+                        case 1:
+                            dom[i].style.backgroundColor="rgba(0, 0, 255, 0.7)";
+                            dom[i].style.boxShadow="5px 5px 3px rgba(0, 0,255, 0.3)";
+                            break;
+                        case 2:
+                            dom[i].style.backgroundColor="rgba(0, 255, 0, 0.7)";
+                            dom[i].style.boxShadow="5px 5px 3px rgba(0,255,0, 0.3)";
+                            break;
+                        case 3:
+                            dom[i].style.backgroundColor="rgba(0, 255, 205, 0.7)";
+                            dom[i].style.boxShadow="5px 5px 3px rgba(0, 255,205, 0.3)";
+                            break;
+                        case 4:
+                            dom[i].style.backgroundColor="rgba(0, 0, 139, 0.7)";
+                            dom[i].style.boxShadow="5px 5px 3px rgba(0, 0,139, 0.3)";
+                            break;
+                        case 5:
+                            dom[i].style.backgroundColor="rgba(128, 0, 128, 0.7)";
+                            dom[i].style.boxShadow="5px 5px 3px rgba(128, 0,128, 0.3)";
+                            break;
+                    }
+                    }
+            },
+            addTodo:function(e){
+                if(e.which!=13 || e.target.value==""){
+                    return;
+                }   let content=MAIN.data.content;
+                    content.push({
+                        title:e.target.value,
+                        complete:false
+                    })
+                    MAIN.render();
+                    e.target.value=null;
+            },
+            changeTodo:function(e){
+                let parentNode=e.target.parentNode;  
+                let contentIndex=parentNode.dataset.index;
+                let dataContent=MAIN.data.content;
+                dataContent[contentIndex].complete = !dataContent[contentIndex].complete
+                MAIN.render();
+            },
+            removeTodo:function(e){
+                let dataContent=MAIN.data.content;
+                let parentNode=e.target.parentNode;
+                let contentIndex=parentNode.dataset.index;
+                dataContent.splice(contentIndex,1)
+                MAIN.render();
+            },
+            btnTodo:function(e){
+                let btnItem=e.target;
+                let changekey=e.target.dataset.id;
+                MAIN.data.changes=Number(changekey)
+                MAIN.render();
             }
-        })
-        todoList.addEventListener('click',function(num){
-            let classLeft = num.target.className.indexOf("todo-item-left");
-            let classRight = num.target.className.indexOf("todo-item-right");
-            let classitem =num.target.parentNode;
-            if(classLeft >= 0){
-                let addActive= classitem.className.indexOf("active");
-                if(addActive<0){
-                    classitem.className += " active";
-                }else{
-                    classitem.className = "todo-item";
-                }
-            }
-            if(classRight>=0){
-                classitem.remove();
-            }
-        })
+        }
+        MAIN.init();
     </script>
 </body>
 </html>
