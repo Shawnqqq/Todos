@@ -66,6 +66,34 @@
             box-shadow: 5px 5px 3px rgba(251, 255, 0, 0.3);
             margin-top: 10px;
         }
+        .todo-list .red{
+            background-color:rgba(251, 0, 0, 0.678);
+            box-shadow:5px 5px 3px rgba(251, 0, 0, 0.3);
+        }
+        .todo-list .yellow{
+            background-color:rgba(251, 255, 0, 0.712);
+            box-shadow:5px 5px 3px rgba(251, 255, 0, 0.3);
+        }
+        .todo-list .blue{
+            background-color:rgba(0, 0, 255, 0.7);
+            box-shadow:5px 5px 3px rgba(0, 0,255, 0.3);
+        }
+        .todo-list .green{
+            background-color:rgba(0, 255, 0, 0.7);
+            box-shadow:5px 5px 3px rgba(0, 255, 0, 0.7);
+        }
+        .todo-list .cyan{
+            background-color:rgba(0, 255, 205, 0.7);
+            box-shadow:5px 5px 3px rgba(0, 255, 205, 0.7);
+        }
+        .todo-list .darkblue{
+            background-color:rgba(0, 0, 139, 0.7);
+            box-shadow:5px 5px 3px rgba(0, 0, 139, 0.7);
+        }
+        .todo-list .violet{
+            background-color:rgba(128, 0, 128, 0.7);
+            box-shadow:5px 5px 3px rgba(128, 0, 128, 0.7);
+        }
         .todo-item:hover .todo-item-right{
             display: block;
         }
@@ -202,12 +230,14 @@
                     default:showContent =content;
                     break;
                 }
-                let todosElement= showContent.map(function(item){
-                    return  `<div class="todo-item ${item.complete ? 'active': ''}"  data-index="${item.index}">
-                                <div class="todo-item-left"></div>
-                                <div class="todo-item-middle">${item.title}</div>
-                                <div class="todo-item-right"></div>
-                            </div>`
+                let color=['yellow','blue','green','cyan','darkblue','violet','red'];
+                let todosElement= showContent.map(function(item,index){
+                    index=index%color.length;
+                        return  `<div class="todo-item ${color[index]} ${item.complete ? 'active': ''}"  data-index="${item.index}">
+                                    <div class="todo-item-left"></div>
+                                    <div class="todo-item-middle">${item.title}</div>
+                                    <div class="todo-item-right"></div>
+                                </div>`
                 }).join('');
                 let btnElemtnt= Object.keys(change).map(function(key){
                     return `<div class="btn-item ${changes==key ? 'active':''}" data-id="${key}">${change[key]}</div>`
@@ -216,40 +246,6 @@
                 todoBtn=document.getElementById("todo-btn");
                 todoList.innerHTML=todosElement;
                 todoBtn.innerHTML=btnElemtnt;
-                let dom =document.getElementsByClassName('todo-item');
-                    for(i=0;i<dom.length;i++){
-                    let itemIndex=i%7;
-                    switch(itemIndex){
-                        case 6:
-                            dom[i].style.backgroundColor="rgba(251, 0, 0, 0.678)";
-                            dom[i].style.boxShadow="5px 5px 3px rgba(251, 0, 0, 0.3)";
-                            break;
-                        case 0:
-                            dom[i].style.backgroundColor="rgba(251, 255, 0, 0.712)";
-                            dom[i].style.boxShadow="5px 5px 3px rgba(251, 255, 0, 0.3)";
-                            break;
-                        case 1:
-                            dom[i].style.backgroundColor="rgba(0, 0, 255, 0.7)";
-                            dom[i].style.boxShadow="5px 5px 3px rgba(0, 0,255, 0.3)";
-                            break;
-                        case 2:
-                            dom[i].style.backgroundColor="rgba(0, 255, 0, 0.7)";
-                            dom[i].style.boxShadow="5px 5px 3px rgba(0,255,0, 0.3)";
-                            break;
-                        case 3:
-                            dom[i].style.backgroundColor="rgba(0, 255, 205, 0.7)";
-                            dom[i].style.boxShadow="5px 5px 3px rgba(0, 255,205, 0.3)";
-                            break;
-                        case 4:
-                            dom[i].style.backgroundColor="rgba(0, 0, 139, 0.7)";
-                            dom[i].style.boxShadow="5px 5px 3px rgba(0, 0,139, 0.3)";
-                            break;
-                        case 5:
-                            dom[i].style.backgroundColor="rgba(128, 0, 128, 0.7)";
-                            dom[i].style.boxShadow="5px 5px 3px rgba(128, 0,128, 0.3)";
-                            break;
-                    }
-                    }
             },
             addTodo:function(e){
                 if(e.which!=13 || e.target.value==""){

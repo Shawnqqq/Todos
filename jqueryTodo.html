@@ -120,11 +120,12 @@
                 if(e.which!=13 || e.target.value.trim()==''){
                     return;
                 }
-                $("#todo-list").append(`<div class="todo-item">
-                <div class="todo-left"></div>
-                <div class="todo-middle">${e.target.value.trim()}</div>
-                <div class="todo-right"></div>
-                </div>`);
+                $("#todo-list").append(`
+                    <div class="todo-item">
+                        <div class="todo-left"></div>
+                        <div class="todo-middle">${e.target.value.trim()}</div>
+                        <div class="todo-right"></div>
+                    </div>`);
                 $("#todo-input").val('')
             },
             changeTodo:function(){
